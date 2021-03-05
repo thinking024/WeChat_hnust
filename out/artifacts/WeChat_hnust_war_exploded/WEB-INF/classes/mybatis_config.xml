@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!--引入外部配置文件-->
+    <properties resource="db.properties">
+        <!--也可直接在这里写property，不用从配置文件导入，会优先使用外部配置文件-->
+        <!--<property name="driver" value="com.mysql.cj.jdbc.Driver" />-->
+    </properties>
+    
+    <settings>
+        <!--日志工厂-->
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+
+        <!--开启驼峰命名自动映射，即从经典数据库列名 A_COLUMN 映射到经典 Java 属性名 aColumn-->
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+        
+        <!--开启全局缓存-->
+        <setting name="cacheEnabled" value="true" />
+    </settings>
+
+    <typeAliases>
+        <!--给mapper.xml中的自定义的类型取别名，就不用写全限定名了-->
+        <!--<typeAlias alias="User" type="pojo.User" />-->
+
+        <!--也可以指定包名，在包自动搜寻需要的java bean-->
+        <package name="pojo" />
+    </typeAliases>
+
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <!--这里的value可以直接写死，也可以通过properties传递值-->
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <!--每个Mapper都需要在Mybatis中注册-->
+        <mapper class="dao.IUserDao" />
+    </mappers>
+</configuration>

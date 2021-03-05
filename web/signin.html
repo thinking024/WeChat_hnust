@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>登录界面</title>
+
+    <!-- 引入 WeUI -->
+    <link rel="stylesheet" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">
+    <!-- head 中 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+    <!-- 如果使用了某些拓展插件还需要额外的JS -->
+    <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/swiper.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/city-picker.min.js"></script>
+
+    <style type="text/css">
+        .div1{
+            margin-top: 200px;
+            margin-left: 10px;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+        .div2{
+            margin-top: 20px;
+            margin-left: 50px;
+            margin-right: 50px;
+        }
+    </style>
+</head>
+
+<body ontouchstart>
+    <form class="weui-cells weui-cells_form" id="login_info" action="#!" method="post">
+        <div class="weui-cells weui-cells_from div1">
+            <div class="weui-cell">
+                <div class="weui-cell__hd">
+                    <label class="weui-label">学号</label>
+                </div>
+                <div class="weui-cell__bd">
+                    <input required class="weui-input" id="account" pattern="[0-9]*" placeholder="请输入您的学号" type="number" max="999999999999" min="0">
+                </div>
+            </div>
+
+            <div class="weui-cell">
+                <div class="weui-cell__hd">
+                    <label class="weui-label">密码</label>
+                </div>
+                <div class="weui-cell__bd">
+                    <input required class="weui-input" id="password" placeholder="请输入您的密码" type="password">
+                </div>
+            </div>
+
+        </div>
+    </form>
+    <div class="div2">
+        <button class="weui-btn weui-btn_primary" onclick="login();">登录</button>
+    </div>
+
+    <!-- body 最后 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+
+    <script>
+        function login() {
+            var account = document.getElementById("account").value;
+            var password = document.getElementById("password").value;
+            if (account != null && password != null ) {
+                var str = window.location.search;
+                var params = str.substring(str.indexOf('=') + 1);
+                console.log('account=' + account + '&password' + password + '&openId=' + params);
+                $.ajax({
+                    url: "http://yiyuanzhu.nat300.top/login",  // 发送的路径
+                    type: "post",  // 发送方式
+                    dataType: 'JSON',  // 返回的json数据
+                    data:{'openId': params, 'account': account, 'password': password},  // 发送的数据
+                    success: (result) => {  // 成功获取到后端返回结果的回调函数
+                        console.log(result);
+                        if (result.statusCode === 100) {
+                            alert('login successfully');
+                        } else {
+                            alert(result.msg);
+                        }
+                    },
+                    error:()=>{
+                        alert("ajax failed");
+                    }
+                })
+            }
+        }
+    </script>
+</body>
+</html>
+
