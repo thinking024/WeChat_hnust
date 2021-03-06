@@ -10,4 +10,5 @@ public class GlobalInfo {
     public static String authAccessToken;
     public static final int key = 3;
     public static final String loginUrl = "http://yiyuanzhu.nat300.top/signin.html";
+    public static String currentTerm = "2020-20201-2";
 }

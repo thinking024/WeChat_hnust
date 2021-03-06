@@ -2,6 +2,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.Test;
+import pojo.Exam;
 import pojo.Grade;
 import utils.Crawler;
 
@@ -17,6 +18,15 @@ public class GradeTest {
             System.out.println(grade);
         }
         System.out.println(grades.size());
+    }
+
+    @Test
+    public void test3() throws Exception{
+        ArrayList<Exam> exams = Crawler.getExam("1805050213", "hn095573");
+        for (Exam grade : exams) {
+            System.out.println(grade);
+        }
+        System.out.println(exams.size());
     }
 
     @Test

@@ -6,6 +6,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import pojo.Course;
+import pojo.Exam;
 import pojo.Grade;
 import pojo.MyCookies;
 
@@ -181,9 +182,8 @@ public class Crawler {
 
         // 爬取课程
         String homeUrl = "http://kdjw.hnust.edu.cn/jsxsd/framework/xsMain.jsp";
-        if (loginResponse.isSuccessful()) { // 成功登录进入主页
-            if (homeUrl.equals(loginResponse.request().url().toString().trim())) {
-                ArrayList<Course> courses = new ArrayList<>();
+        if (loginResponse.isSuccessful()) { // 登录请求成功
+            if (homeUrl.equals(loginResponse.request().url().toString().trim())) { // 账号密码正确
                 // 获取待查询课表节次
                 String orderUrl = "http://kdjw.hnust.edu.cn/jsxsd/framework/xsMain_new.jsp";
                 Request orderRequest = new Request.Builder().url(orderUrl).build();
@@ -197,13 +197,15 @@ public class Crawler {
                 String courseUrl = String.format("http://kdjw.hnust.edu.cn/jsxsd/framework/main_index_loadkb.jsp?rq=%s&sjmsValue=%s", time, order);
                 Request courseRequest = new Request.Builder().url(courseUrl).build();
                 Response courseResponse = client.newCall(courseRequest).execute();
+                ArrayList<Course> courses = dayCourseParser(courseResponse.body().string());
+
+                courseResponse.close();
                 loginResponse.close();
-                return dayCourseParser(courseResponse.body().string());
-            } else { // 密码错误
-                loginResponse.close();
-                return null;
+                return courses;
             }
         }
+
+        // 登录请求失败
         loginResponse.close();
         return null;
     }
@@ -292,8 +294,8 @@ public class Crawler {
 
         // 爬取课程
         String homeUrl = "http://kdjw.hnust.edu.cn/jsxsd/framework/xsMain.jsp";
-        if (loginResponse.isSuccessful()) { // 成功登录进入主页
-            if (homeUrl.equals(loginResponse.request().url().toString().trim())) {
+        if (loginResponse.isSuccessful()) { // 请求成功
+            if (homeUrl.equals(loginResponse.request().url().toString().trim())) { // 账号密码正确
                 // 获取待查询课表节次
                 String orderUrl = "http://kdjw.hnust.edu.cn/jsxsd/framework/xsMain_new.jsp";
                 Request orderRequest = new Request.Builder().url(orderUrl).build();
@@ -350,11 +352,10 @@ public class Crawler {
                 loginResponse.close();
                 courseResponse.close();
                 return courses;
-            } else { // 密码错误
-                loginResponse.close();
-                return null;
             }
         }
+
+        // 登录请求失败
         loginResponse.close();
         return null;
     }
@@ -411,6 +412,7 @@ public class Crawler {
                     i = code.length();
                 }
             }
+            response.close();
 
             String loginUrl = "http://kdjw.hnust.edu.cn/Logon.do?method=logon";
             FormBody.Builder formBody = new FormBody.Builder();//创建表单请求体
@@ -438,17 +440,17 @@ public class Crawler {
                     Response gradeResponse = client.newCall(gradeRequest).execute();
                     ArrayList<Grade> grades = gradeParser(gradeResponse.body().string());
 
+                    gradeResponse.close();
+                    loginResponse.close();
+                    response.close();
                     return grades;
-
-                } else {
-                    System.out.println("password error");
-                    return null;
                 }
-            } else {
-                System.out.println("error");
-                return null;
             }
+            loginResponse.close();
         }
+
+        //密钥请求失败
+        response.close();
         return null;
     }
 
@@ -489,6 +491,97 @@ public class Crawler {
             grades.add(grade);
         }
         return grades;
+    }
+
+    public static ArrayList<Exam> getExam(String account, String password) throws IOException {
+        String encodeUrl = "http://kdjw.hnust.edu.cn//Logon.do?method=logon&flag=sess";
+        HashMap<String, List<Cookie>> cookieStore = new HashMap<>();
+        MyCookies myCookies = new MyCookies(cookieStore);
+        OkHttpClient client = new OkHttpClient.Builder().cookieJar(myCookies).build();
+
+        Request encodeRequest = new Request.Builder().url(encodeUrl).build();
+        Response response = client.newCall(encodeRequest).execute();
+        if (response.isSuccessful()) {
+            String dataStr = response.body(). string();
+            String scode = dataStr.split("#")[0];
+            String sxh = dataStr.split("#")[1];
+            String code = account + "%%%" + password;
+            String encoded = "";
+            for (int i = 0; i < code.length(); i++) {
+                if (i < 20) {
+                    encoded = encoded + code.substring(i, i + 1) + scode.substring(0, parseInt(sxh.substring(i, i + 1)));
+                    scode = scode.substring(parseInt(sxh.substring(i, i + 1)));
+                } else {
+                    encoded = encoded + code.substring(i);
+                    i = code.length();
+                }
+            }
+
+            String loginUrl = "http://kdjw.hnust.edu.cn/Logon.do?method=logon";
+            FormBody.Builder formBody = new FormBody.Builder();//创建表单请求体
+            formBody.add("userAccount", account);
+            formBody.add("userPassword", "");
+            formBody.add("encoded", encoded);
+
+            Request loginRequest = new Request.Builder()//创建Request 对象。
+                    .url(loginUrl)
+                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                    .addHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.6)")
+                    .post(formBody.build())//传递请求体
+                    .build();
+
+            Response loginResponse = client.newCall(loginRequest).execute();
+
+            String homeUrl = "http://kdjw.hnust.edu.cn/jsxsd/framework/xsMain.jsp";
+            if (loginResponse.isSuccessful()) { // 请求成功
+                if (homeUrl.equals(loginResponse.request().url().toString().trim())) { // 账号密码正确
+                    String examUrl = "http://kdjw.hnust.edu.cn/jsxsd/xsks/xsksap_list";
+                    FormBody.Builder formBody2 = new FormBody.Builder();//创建表单请求体
+                    formBody2.add("xqlbmc", "");
+                    formBody2.add("xnxqid", GlobalInfo.currentTerm);
+                    formBody2.add("xqlb", "");
+
+                    Request examRequest = new Request.Builder()//创建Request 对象。
+                            .url(examUrl)
+                            .addHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.6)")
+                            .post(formBody2.build())//传递请求体
+                            .build();
+                    Response examResponse = client.newCall(examRequest).execute();
+
+                    ArrayList<Exam> exams = examParser(examResponse.body().string());
+                    examResponse.close();
+                    loginResponse.close();
+                    response.close();
+                    return exams;
+                }
+            }
+            loginResponse.close();
+        }
+
+        // 密钥请求失败
+        response.close();
+        return null;
+    }
+
+    public static ArrayList<Exam> examParser(String html) {
+        Document doc = Jsoup.parse(html);
+        Elements tr = doc.getElementsByTag("tr");
+        tr.remove(0);
+
+        ArrayList<Exam> exams = new ArrayList<>();
+        for (Element element : tr) {
+            String text = element.text();
+            if (text.equals("未查询到数据")) {
+                break;
+            }
+            Exam exam = new Exam();
+            String[] info = text.split(" ");
+            exam.setName(info[4]);
+            exam.setTime(info[6] + " " + info[7]);
+            exam.setPlace(info[8]);
+            exams.add(exam);
+        }
+        return exams;
     }
 }
 

@@ -3,6 +3,7 @@ package utils;
 import dao.IUserDao;
 import org.apache.ibatis.session.SqlSession;
 import pojo.Course;
+import pojo.Exam;
 import pojo.TextMessage;
 import pojo.User;
 
@@ -39,15 +40,16 @@ public class MessageHandler {
                 String eventKey = map.get("EventKey");
 
                 if (eventType.equals(MessageUtil.EVENT_TYPE_CLICK)) {
-                    //判断事件key值，对应自定义菜单
-                    if (eventKey.equals("TIMETABLE_TODAY")) {
+                    SqlSession sqlSession = MybatisUtils.getSqlSession();
+                    IUserDao mapper = sqlSession.getMapper(IUserDao.class);
+                    User user = mapper.getUserByOpenId(fromUserName);
+                    sqlSession.close();
 
-                        SqlSession sqlSession = MybatisUtils.getSqlSession();
-                        IUserDao mapper = sqlSession.getMapper(IUserDao.class);
-                        User user = mapper.getUserByOpenId(fromUserName);
-                        if (user == null) { // 未登录，带上openid登录
-                            respContent = String.format("用户信息不存在，请点击下方链接\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
-                        } else {
+                    if (user == null) { // 未登录，带上openid登录
+                        respContent = String.format("用户信息不存在，请点击下方链接\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
+                    } else {
+                        //判断事件key值，对应自定义菜单
+                        if (eventKey.equals("TIMETABLE_TODAY")) {
                             ArrayList<Course> courses = Crawler.getDayCourse(user.getAccount(), Encode.kaiserDecode(user.getPassword()));
                             if (courses == null) { // 用户信息过期，带上openid登录
                                 respContent = String.format("用户信息失效，请重新登录\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
@@ -61,17 +63,25 @@ public class MessageHandler {
                                 }
                                 respContent += "\n" + courses.get(courses.size() - 1).getName(); // 带上备注
                             }
+
+                        } else if (eventKey.equals("ACHIEVEMENT_MY")) {
+                            respContent = "我的成绩被点击";
+
+                        } else if (eventKey.equals("EXAMINATION_SHOW")) {
+                            ArrayList<Exam> exams = Crawler.getExam(user.getAccount(), Encode.kaiserDecode(user.getPassword()));
+                            if (exams == null) { // 用户信息过期，带上openid登录
+                                respContent = String.format("用户信息失效，请重新登录\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
+                            } else { // 拿到课程
+                                if (exams.size() == 0) {
+                                    respContent += "暂无考试\n";
+                                } else {
+                                    for (int i = 0; i < exams.size(); i++) {
+                                        respContent += String.format("课程：%s\n时间：%s\n地点：%s\n", exams.get(i).getName(), exams.get(i).getTime(), exams.get(i).getPlace());
+                                    }
+                                }
+                            }
+
                         }
-                        sqlSession.close();
-
-                    } else if (eventKey.equals("ACHIEVEMENT_MY")) {
-
-                        respContent = "我的成绩被点击";
-
-                    } else if (eventKey.equals("EXAMINATION_SHOW")) {
-
-                        respContent = "考试安排被点击";
-
                     }
                 }
             }
