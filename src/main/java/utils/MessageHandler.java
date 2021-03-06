@@ -22,7 +22,6 @@ public class MessageHandler {
         try {
             //默认返回的文本消息内容
             String respContent = "";
-            System.out.println(2);
             //解析xml请求
             Map<String, String> map = MessageUtil.parseXML(request);
 
@@ -91,9 +90,9 @@ public class MessageHandler {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            return result;
         }
-
-        return result;
     }
 
 }

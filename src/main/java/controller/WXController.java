@@ -70,7 +70,6 @@ public class WXController {
         //设置编码格式
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-        System.out.println("请求进入");
 
         //接收、处理、响应由微信服务器转发的用户发送给公众号的消息
         String result = "";
@@ -81,11 +80,14 @@ public class WXController {
                 result = "未正确响应";
             }
             //System.out.println("构造结果：" + result);
-        }catch (Exception e){
+        } catch (Exception e){
             e.printStackTrace();
-            System.out.println("发生异常："+ e.getMessage());
+            result = e.getMessage();
+            //System.out.println("发生异常："+ e.getMessage());
         }
-        return result;
+        finally {
+            return result;
+        }
     }
 
 

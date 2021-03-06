@@ -6,13 +6,11 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.web.bind.annotation.*;
 import pojo.JSONResult;
 import pojo.User;
-import utils.Crawler;
 import utils.Encode;
 import utils.MybatisUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 @CrossOrigin(origins = "*")
@@ -24,8 +22,8 @@ public class LoginController {
         JSONResult json = new JSONResult();
         try {
             /*if (Crawler.check(account, password) == false) {
-                json.setStatusCode(400);
-                json.setMsg("password error");
+                json.setStatusCode(401);
+                json.setMsg("account or password error");
             } else*/ {
                 SqlSession sqlSession = MybatisUtils.getSqlSession();
                 IUserDao mapper = sqlSession.getMapper(IUserDao.class);
@@ -42,7 +40,7 @@ public class LoginController {
                     json.setStatusCode(100);
                     json.setMsg("ok");
                 } else {
-                    json.setStatusCode(501);
+                    json.setStatusCode(510);
                     json.setMsg("fail to operate user table");
                 }
 

@@ -9,6 +9,7 @@ import pojo.Course;
 import pojo.MyCookies;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -247,7 +248,7 @@ public class Crawler {
         return courses;
     }
 
-    public static ArrayList<Course> getWeekCourse(String account, String password, int week) throws Exception {
+    public static ArrayList<Course> getWeekCourse(String account, String password, int week) throws IOException {
         String encodeUrl = "http://kdjw.hnust.edu.cn//Logon.do?method=logon&flag=sess";
         HashMap<String, List<Cookie>> cookieStore = new HashMap<>();
         MyCookies myCookies = new MyCookies(cookieStore);
@@ -358,7 +359,7 @@ public class Crawler {
     }
 
     // 可以合并函数，并且通过直接get td标签元素，无需先获取tr
-    public static ArrayList<Course> weekCourseParser(String html) throws Exception{
+    public static ArrayList<Course> weekCourseParser(String html) {
         Document document = Jsoup.parse(html);
         Elements rows = document.getElementsByTag("tbody").first().children();
 
