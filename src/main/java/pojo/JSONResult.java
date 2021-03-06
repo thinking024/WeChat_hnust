@@ -3,7 +3,7 @@ package pojo;
 import java.util.*;
 
 public class JSONResult {
-    private int statusCode;
+    private int statusCode = 500;
     private String msg;
     private List data;
 

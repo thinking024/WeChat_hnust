@@ -73,11 +73,9 @@
                     type: "post",  // 发送方式
                     dataType: 'JSON',  // 返回的json数据
                     data:{'openId': params, 'account': account, 'password': password},  // 发送的数据
-                    //data:'account=' + account + '&password' + password + '&' + params,  // 发送的数据
                     success: (result) => {  // 成功获取到后端返回结果的回调函数
-                        //alert(result);
                         console.log(result);
-                        if (result.satusCode === 100) {
+                        if (result.statusCode === 100) {
                             alert('login successfully');
                         } else {
                             alert(result.msg);
