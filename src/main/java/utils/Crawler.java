@@ -10,7 +10,6 @@ import pojo.Exam;
 import pojo.Grade;
 import pojo.MyCookies;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -463,6 +462,7 @@ public class Crawler {
         String total = s.substring(s.indexOf(" ") + 1);
         Grade totalGrade = new Grade();
         totalGrade.setScore(total);
+        totalGrade.setTerm("0");
         grades.add(totalGrade);
 
         Elements tr = doc.getElementsByTag("tr");
@@ -582,6 +582,125 @@ public class Crawler {
             exams.add(exam);
         }
         return exams;
+    }
+
+    public static TreeMap<String, ArrayList<Grade>> getGrade2(String account, String password) throws IOException {
+        String encodeUrl = "http://kdjw.hnust.edu.cn//Logon.do?method=logon&flag=sess";
+        HashMap<String, List<Cookie>> cookieStore = new HashMap<>();
+        MyCookies myCookies = new MyCookies(cookieStore);
+        OkHttpClient client = new OkHttpClient.Builder().cookieJar(myCookies).build();
+
+        Request encodeRequest = new Request.Builder().url(encodeUrl).build();
+        Response response = client.newCall(encodeRequest).execute();
+        if (response.isSuccessful()) {
+            String dataStr = response.body().string();
+
+            // 加密算法
+            String scode = dataStr.split("#")[0];
+            String sxh = dataStr.split("#")[1];
+            String code = account + "%%%" + password;
+            String encoded = "";
+            for (int i = 0; i < code.length(); i++) {
+                if (i < 20) {
+                    encoded = encoded + code.substring(i, i + 1) + scode.substring(0, parseInt(sxh.substring(i, i + 1)));
+                    scode = scode.substring(parseInt(sxh.substring(i, i + 1)));
+                } else {
+                    encoded = encoded + code.substring(i);
+                    i = code.length();
+                }
+            }
+            response.close();
+
+            String loginUrl = "http://kdjw.hnust.edu.cn/Logon.do?method=logon";
+            FormBody.Builder formBody = new FormBody.Builder();//创建表单请求体
+            formBody.add("userAccount", account);
+            formBody.add("userPassword", "");
+            formBody.add("encoded", encoded);
+
+            Request loginRequest = new Request.Builder()//创建Request 对象。
+                    .url(loginUrl)
+                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                    .addHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.6)")
+                    .post(formBody.build())//传递请求体
+                    .build();
+
+            Response loginResponse = client.newCall(loginRequest).execute();
+
+            String homeUrl = "http://kdjw.hnust.edu.cn/jsxsd/framework/xsMain.jsp";
+            if (loginResponse.isSuccessful()) {
+                if (homeUrl.equals(loginResponse.request().url().toString().trim())) {
+                    String gradeUrl = "http://kdjw.hnust.edu.cn/jsxsd/kscj/cjcx_list";
+                    Request gradeRequest = new Request.Builder()//创建Request 对象。
+                            .url(gradeUrl)
+                            .addHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.6)")
+                            .build();
+                    Response gradeResponse = client.newCall(gradeRequest).execute();
+                    TreeMap<String, ArrayList<Grade>> grades = gradeParser2(gradeResponse.body().string());
+
+                    gradeResponse.close();
+                    loginResponse.close();
+                    response.close();
+                    return grades;
+                }
+            }
+            loginResponse.close();
+        }
+
+        //密钥请求失败
+        response.close();
+        return null;
+    }
+
+    public static TreeMap<String, ArrayList<Grade>> gradeParser2(String html) {
+//        System.out.println(html);
+        TreeMap<String, ArrayList<Grade>> map = new TreeMap<>(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o2.compareTo(o1);
+            }
+        });
+
+        Document doc = Jsoup.parse(html);
+        Element div = doc.getElementsByTag("div").first();
+        String s = div.ownText();
+        String total = s.substring(s.indexOf(" ") + 1);
+        Grade totalGrade = new Grade();
+        totalGrade.setScore(total);
+        ArrayList<Grade> list = new ArrayList<>();
+        list.add(totalGrade);
+        //totalGrade.setTerm("0");
+        map.put("0", list);
+
+        Elements tr = doc.getElementsByTag("tr");
+        Element head = tr.remove(0);
+        for (Element element : tr) {
+            Grade grade = new Grade();
+            String[] text = element.text().trim().split(" ");
+            ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(text));
+            if (text.length == 12) {
+                arrayList.add(8, "");
+            }
+            arrayList.remove(0);
+            arrayList.remove(1);
+            arrayList.remove(4);
+//            System.out.println(arrayList);
+
+            //grade.setTerm(arrayList.get(0));
+            grade.setName(arrayList.get(1));
+            grade.setScore(arrayList.get(2));
+            grade.setCredit(arrayList.get(3));
+            grade.setGradePoint(arrayList.get(4));
+            //grade.setTerm_again(arrayList.get(5));
+            //grade.setExam_type(arrayList.get(6) + " " + arrayList.get(7));
+            //grade.setCourse_type(arrayList.get(8) + " " + arrayList.get(9));
+
+            String term = arrayList.get(0);
+            if (!map.containsKey(term)) {
+                map.put(term, new ArrayList<>());
+            }
+            map.get(term).add(grade);
+        }
+        return map;
     }
 }
 

@@ -2,16 +2,14 @@ package utils;
 
 import dao.IUserDao;
 import org.apache.ibatis.session.SqlSession;
-import pojo.Course;
-import pojo.Exam;
-import pojo.TextMessage;
-import pojo.User;
+import pojo.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * 消息处理工具类（处理微信发来的请求）
@@ -65,7 +63,21 @@ public class MessageHandler {
                             }
 
                         } else if (eventKey.equals("ACHIEVEMENT_MY")) {
-                            respContent = "我的成绩被点击";
+                            TreeMap<String, ArrayList<Grade>> gradeMap = Crawler.getGrade2(user.getAccount(), Encode.kaiserDecode(user.getPassword()));
+                            if (gradeMap == null) { // 用户信息过期，带上openid登录
+                                respContent = String.format("用户信息失效，请重新登录\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
+                            } else { // 拿到课程
+                                if (gradeMap.size() == 1) {
+                                    respContent += "暂无任何学期成绩\n";
+                                } else {
+                                    ArrayList<Grade> gradeList = gradeMap.firstEntry().getValue();
+                                    respContent += "学期：" + gradeMap.firstEntry().getKey() + "\n\n";
+                                    for (Grade grade : gradeList) {
+                                        respContent += String.format("%s\n分数：%s，学分：%s，绩点：%s\n\n", grade.getName(), grade.getScore(), grade.getCredit(), grade.getGradePoint());
+                                    }
+                                    respContent += String.format("\n<a href=\"%s\">点击查看成绩详情</a>", "http://yiyuanzhu.nat300.top");
+                                }
+                            }
 
                         } else if (eventKey.equals("EXAMINATION_SHOW")) {
                             ArrayList<Exam> exams = Crawler.getExam(user.getAccount(), Encode.kaiserDecode(user.getPassword()));
@@ -73,7 +85,7 @@ public class MessageHandler {
                                 respContent = String.format("用户信息失效，请重新登录\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
                             } else { // 拿到课程
                                 if (exams.size() == 0) {
-                                    respContent += "暂无考试\n";
+                                    respContent += "当前学期暂无考试\n";
                                 } else {
                                     for (int i = 0; i < exams.size(); i++) {
                                         respContent += String.format("课程：%s\n时间：%s\n地点：%s\n", exams.get(i).getName(), exams.get(i).getTime(), exams.get(i).getPlace());

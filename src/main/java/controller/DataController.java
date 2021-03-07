@@ -1,35 +1,41 @@
 package controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import pojo.Course;
+import pojo.Grade;
 import utils.Crawler;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.TreeMap;
 
-@Controller
-@RequestMapping("/Data")
+@RestController
+@RequestMapping("/test")
 public class DataController {
-    @RequestMapping("/name")
-    public String user1(@RequestParam String name, Model model) {
-        // 1.接收前端传递name的参数
-        //System.out.println(name);
-        // 2.将参数再传递给前端
-        model.addAttribute("msg",name);
-        String account = "1805050213";
-        String password = "hn095573";
-        try {
-            ArrayList<Course> courses = Crawler.getWeekCourse(account, password, 9);
-            if (courses != null) {
-                for (Course course : courses) {
-                    System.out.println(course);
+
+    @GetMapping("/cookie")
+    public String delete(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("auth")) {
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                    break;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return "index";
+        return "66";
     }
 }

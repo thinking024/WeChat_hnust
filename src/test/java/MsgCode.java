@@ -23,7 +23,7 @@ public class MsgCode {
 
     @Test
     public void test2() throws Exception {
-        String redirectURL = "http://yiyuanzhu.nat300.top/WX/authorize";
+        String redirectURL = "http://yiyuanzhu.nat300.top/signin.html?type=course";
         String auth2URL = "https://open.weixin.qq.com/connect/oauth2/authorize?appid="
                 + GlobalInfo.appId + "&redirect_uri=" + URLEncoder.encode(redirectURL, "utf-8") +
                 "&response_type=code&scope=snsapi_base&state=#wechat_redirect";

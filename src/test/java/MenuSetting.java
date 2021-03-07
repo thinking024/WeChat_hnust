@@ -11,8 +11,8 @@ import utils.NetWorkHelper;
 public class MenuSetting {
 
     public static void main(String[] args) throws JSONException {
-        add();
-        //delete();
+        //add();
+        delete();
     }
 
     public static void add() throws JSONException{
@@ -34,7 +34,7 @@ public class MenuSetting {
                 "                \"type\": \"view\",\n" +
                 "                \"name\": \"本周课表\",\n" +
                 "                \"key\": \"TIMETABLE_WEEK\",\n" +
-                "                \"url\":\"http://mpmrix.natappfree.cc/WX/getCourse\",\n" +
+                "                \"url\":\"http://yiyuanzhu.nat300.top/course.html\",\n" +
                 "                \"sub_button\": [ ]\n" +
                 "            }\n" +
                 "        ]\n" +
