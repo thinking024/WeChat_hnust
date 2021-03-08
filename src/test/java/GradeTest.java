@@ -66,4 +66,9 @@ public class GradeTest {
         String substring = s.substring(s.indexOf(" ") + 1);
         System.out.println(substring);
     }
+
+    @Test
+    public void test_() {
+
+    }
 }

@@ -45,5 +45,6 @@
     <mappers>
         <!--每个Mapper都需要在Mybatis中注册-->
         <mapper class="dao.IUserDao" />
+        <mapper class="dao.ICourseDao" />
     </mappers>
 </configuration>

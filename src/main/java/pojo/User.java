@@ -1,9 +1,13 @@
 package pojo;
 
+import java.sql.Date;
+
 public class User {
     private String account;
     private String password;
     private String openId;
+    private Date expire;
+    private String info;
 
     public User() {
 
@@ -13,6 +17,14 @@ public class User {
         this.account = account;
         this.password = password;
         this.openId = openId;
+    }
+
+    public User(String account, String password, String openId, Date expire, String info) {
+        this.account = account;
+        this.password = password;
+        this.openId = openId;
+        this.expire = expire;
+        this.info = info;
     }
 
     public String getAccount() {
@@ -39,12 +51,30 @@ public class User {
         this.openId = openId;
     }
 
+    public Date getExpire() {
+        return expire;
+    }
+
+    public void setExpire(Date expire) {
+        this.expire = expire;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "account='" + account + '\'' +
                 ", password='" + password + '\'' +
                 ", openId='" + openId + '\'' +
+                ", expire=" + expire +
+                ", info='" + info + '\'' +
                 '}';
     }
 }

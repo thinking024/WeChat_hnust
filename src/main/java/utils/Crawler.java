@@ -241,7 +241,7 @@ public class Crawler {
         if (text == null) { // 无备注信息
             text = "";
         } else { // 有备注信息
-            text = text.replace(";", "\n");
+            text = text.replace(";", "\n").replace(".", "");
         }
         Course course = new Course();
         course.setName(text);
@@ -383,6 +383,19 @@ public class Crawler {
                 }
             }
         }
+
+        String text = rows.last().text();
+        System.out.println("before" + text);
+        if (text == null) { // 无备注信息
+            text = "";
+        } else { // 有备注信息
+            text = text.replace(";", "\n");
+        }
+        Course course = new Course();
+        course.setName(text);
+        courses.add(course);
+        System.out.println("after" + text);
+
         return courses;
     }
 

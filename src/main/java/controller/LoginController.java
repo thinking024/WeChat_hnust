@@ -51,7 +51,7 @@ public class LoginController {
                 if (user == null) { // 用户不存在
                     result = mapper.insertUser(new User(account, Encode.kaiserEncode(password), openId));
                 } else { // 修改存储的教务网账号信息
-                    result = mapper.updateUser(account, Encode.kaiserEncode(password), openId);
+                    result = mapper.updateAccount(account, Encode.kaiserEncode(password), openId);
                 }
                 if (result == 1) { // db操作成功
                     json.put("statusCode", 100);

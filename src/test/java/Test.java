@@ -239,11 +239,10 @@ public class Test {
     }
 
     @org.junit.Test
-    public void test_check() {
-        try {
-            System.out.println(Crawler.check("180505021", "hn095573"));
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void test_check() throws Exception {
+        ArrayList<Course> courses = Crawler.getWeekCourse("1805050213", "hn095573", 9);
+        for (Course cours : courses) {
+            System.out.println(cours);
         }
     }
 }

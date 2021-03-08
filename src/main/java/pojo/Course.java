@@ -1,7 +1,7 @@
 package pojo;
 
 public class Course {
-    private String id;
+    private String openId;
     private String name;
     private int day;
     private int weekBegin;
@@ -12,12 +12,12 @@ public class Course {
     public Course() {
     }
 
-    public String getId() {
-        return id;
+    public String getOpenId() {
+        return openId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 
     public String getName() {
@@ -79,7 +79,8 @@ public class Course {
     @Override
     public String toString() {
         return "Course{" +
-                "name='" + name + '\'' +
+                "openId='" + openId + '\'' +
+                ",name='" + name + '\'' +
                 ", day='" + day + '\'' +
                 ", orderBegin='" + orderBegin + '\'' +
                 ", orderEnd='" + orderEnd + '\'' +
