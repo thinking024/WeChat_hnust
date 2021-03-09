@@ -21,6 +21,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+@CrossOrigin(origins = "*")
 @RestController
 public class ServiceController {
     @PostMapping(value="/today", produces={"application/json;charset=UTF-8"})

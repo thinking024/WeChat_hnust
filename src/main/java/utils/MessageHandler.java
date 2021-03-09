@@ -126,7 +126,7 @@ public class MessageHandler {
                                     for (Grade grade : gradeList) {
                                         respContent += String.format("%s\n分数：%s，学分：%s，绩点：%s\n\n", grade.getName(), grade.getScore(), grade.getCredit(), grade.getGradePoint());
                                     }
-                                    respContent += String.format("\n<a href=\"%s\">点击查看成绩详情</a>", "http://yiyuanzhu.nat300.top");
+                                    respContent += String.format("\n<a href=\"%s\">点击查看成绩详情</a>", "http://yiyuanzhu.nat300.top/grade.html");
                                 }
                             }
 

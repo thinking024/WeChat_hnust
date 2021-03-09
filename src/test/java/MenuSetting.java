@@ -11,8 +11,8 @@ import utils.NetWorkHelper;
 public class MenuSetting {
 
     public static void main(String[] args) throws JSONException {
-        //add();
-        delete();
+        add();
+        //delete();
     }
 
     public static void add() throws JSONException{
@@ -32,7 +32,7 @@ public class MenuSetting {
                 "            },\n" +
                 "            {\n" +
                 "                \"type\": \"view\",\n" +
-                "                \"name\": \"本周课表\",\n" +
+                "                \"name\": \"学期课表\",\n" +
                 "                \"key\": \"TIMETABLE_WEEK\",\n" +
                 "                \"url\":\"http://yiyuanzhu.nat300.top/course.html\",\n" +
                 "                \"sub_button\": [ ]\n" +
@@ -40,16 +40,29 @@ public class MenuSetting {
                 "        ]\n" +
                 "    },\n" +
                 "    {\n" +
-                "        \"type\": \"click\",\n" +
-                "        \"name\":\"我的成绩\",\n" +
-                "        \"key\":\"ACHIEVEMENT_MY\"\n" +
+                "        \"name\": \"我的成绩\",\n" +
+                "        \"sub_button\": [\n" +
+                "            {\n" +
+                "                \"type\": \"click\",\n" +
+                "                \"name\": \"近期成绩\",\n" +
+                "                \"key\": \"ACHIEVEMENT_MY\",\n" +
+                "                \"sub_button\": [ ]\n" +
+                "            },\n" +
+                "            {\n" +
+                "                \"type\": \"view\",\n" +
+                "                \"name\": \"所有成绩\",\n" +
+                "                \"key\": \"ACHIEVEMENT_ALL\",\n" +
+                "                \"url\":\"http://yiyuanzhu.nat300.top/grade.html\",\n" +
+                "                \"sub_button\": [ ]\n" +
+                "            }\n" +
+                "        ]\n" +
                 "    },\n" +
                 "    {\n" +
                 "        \"type\": \"click\",\n" +
                 "        \"name\":\"考试安排\",\n" +
                 "        \"key\":\"EXAMINATION_SHOW\"\n" +
                 "    }\n" +
-                "        ]\n" +
+                "    ]\n" +
                 "}";
         System.out.println(json);
 
@@ -91,17 +104,30 @@ public class MenuSetting {
             },
             {
                 "type": "view",
-                "name": "本周课表",
+                "name": "学期课表",
                 "key": "TIMETABLE_WEEK",
-                "url":"http://mpmrix.natappfree.cc/login.html",
+                "url":"http://yiyuanzhu.natapp300.top/query/course.html",
                 "sub_button": [ ]
             }
         ]
     },
     {
-        "type": "click",
-        "name":"我的成绩",
-        "key":"ACHIEVEMENT_MY"
+        "name": "我的成绩",
+        "sub_button": [
+            {
+                "type": "click",
+                "name": "近期成绩",
+                "key": "ACHIEVEMENT_MY",
+                "sub_button": [ ]
+            },
+            {
+                "type": "view",
+                "name": "所有成绩",
+                "key": "ACHIEVEMENT_ALL",
+                "url":"http://yiyuanzhu.natapp300.top/query/grade.html",
+                "sub_button": [ ]
+            }
+        ]
     },
     {
         "type": "click",
