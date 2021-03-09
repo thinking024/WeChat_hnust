@@ -30,13 +30,10 @@ public class MessageHandler {
         System.out.println(expire + "==" + sqlDate.after(expire));
 
         if (expire == null || sqlDate.after(expire)) { // 课程信息不存在或者已过期，则需重新爬取
-            courseMapper.deleteCourse(fromUserName); // 删除已过期信息
-            System.out.println("delete===========");
-            userMapper.updateExpire(sqlDate, fromUserName); // 更新失效日期
 
             try {
-                //courses = Crawler.getDayCourse(user.getAccount(), Encode.kaiserDecode(user.getPassword()));
-                courses = Crawler.getWeekCourse(user.getAccount(), Encode.kaiserDecode(user.getPassword()), 9);
+                courses = Crawler.getDayCourse(user.getAccount(), Encode.kaiserDecode(user.getPassword()));
+                //courses = Crawler.getWeekCourse(user.getAccount(), Encode.kaiserDecode(user.getPassword()), 9);
             } catch (Exception e) { // 爬取失败
                 e.printStackTrace();
                 respContent += e.getMessage();
@@ -48,23 +45,20 @@ public class MessageHandler {
                 respContent += String.format("用户信息失效，请重新登录\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
             } else { // 拿到课程
                 if (courses.size() == 1) {
-                    respContent += "今日无课\n";
+                    respContent += "今日无课\n\n";
                 } else {
                     for (int i = 0; i < courses.size() - 1; i++) {
                         Course course = courses.get(i);
                         respContent += String.format("第%d、%d节：\n课程：%s\n教室：%s\n\n", course.getOrderBegin(), course.getOrderEnd(), course.getName(), course.getClassroom());
-                        // 课程信息不存在，顺便存入数据库
-                        course.setOpenId(fromUserName);
-                        courseMapper.insertCourse(course);
                     }
                 }
 
                 String info = courses.get(courses.size() - 1).getName();
                 respContent += "\n" + info; // 带上备注
-                userMapper.updateInfo(info, fromUserName); // 更新备注信息
             }
         } else { // 从数据库提取当天信息
-            courses = courseMapper.getCourse(fromUserName);
+            int day = DateUtil.getDay(new Date());
+            courses = courseMapper.getDayCourse(fromUserName, day);
             if (courses == null || courses.size() == 0) {
                 respContent += "今日无课\n";
             } else {
@@ -91,12 +85,12 @@ public class MessageHandler {
             String fromUserName = map.get("FromUserName");
             String toUserName = map.get("ToUserName");
             String msgType = map.get("MsgType");
-            //System.out.println("openid=" + fromUserName);
+            System.out.println("msgType=" + msgType);
+
             //判断消息类型
             if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_TEXT)) {
                 respContent = "发送了文本消息";
             } else if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_EVENT)) {
-
                 String eventType = map.get("Event");
                 String eventKey = map.get("EventKey");
 
@@ -105,10 +99,12 @@ public class MessageHandler {
                     IUserDao userMapper = sqlSession.getMapper(IUserDao.class);
                     User user = userMapper.getUserByOpenId(fromUserName);
                     sqlSession.close();
+                    System.out.println(user);
 
                     if (user == null) { // 未登录，带上openid登录
                         respContent = String.format("用户信息不存在，请点击下方链接\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
                     } else {
+
                         //判断事件key值，对应自定义菜单
                         if (eventKey.equals("TIMETABLE_TODAY")) {
                             System.out.println("=====================");

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>成绩查询</title>
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+
+    <style type="text/css">
+        body {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        .head {
+            color: transparent;
+            background-color: #22ad09;
+            text-shadow: rgba(255,255,255,0.5) 0 5px 6px, rgba(255,255,255,0.2) 1px 3px 3px;
+            -webkit-background-clip: text;
+        }
+        .weui-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            line-height: 32px;
+            border:none;
+            margin-top: 5px;
+        }
+        .weui-table td {
+            border:1px solid #e0e0e0;
+            text-align: left;
+            line-height: 25px;
+            padding:8px;
+        }
+        .weui-table-2n tr:nth-child(2n-1) {
+            background-color: #f7f7f7;
+        }
+        .summary {/*总成绩*/
+            margin-top: 10px;
+            font-size: 18px;
+        }
+        .term {
+            margin-top: 20px;
+        }
+        #tableHead {/*表头*/
+            background: #d6f1fc;
+            font-weight: bold;
+        }
+        .failScore {/*不及格成绩*/
+            color: crimson;
+            font-weight: bold;
+        }
+        .cols12 {/*第一、二列*/
+            width: 14%;
+        }
+        .cols3 {
+            width: 60%;
+        }
+        .cols4 {
+            width: 12%;
+        }
+    </style>
+</head>
+<body ontouchstart>
+    <h2 align="center" class="head">我的成绩</h2>
+
+    <div id="div1" class="summary"></div>
+    <div id="div2"></div>
+
+    <!-- body 最后 -->
+    <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+    <script type="text/javascript">
+        $.ajax({
+            url: "http://yiyuanzhu.nat300.top/query/grade",  // 发送的路径
+            type: "get",  // 发送方式
+            dataType: 'JSON',  // 返回的json数据
+            //data:{'openId': params, 'account': account, 'password': password},  // 发送的数据
+            success: (result) => {  // 成功获取到后端返回结果的回调函数
+                console.log(result);
+                if (result.statusCode === 100) {
+                    createTable(result);
+                    //alert('get courses successfully');
+                } else if (result.statusCode === 402){
+                    alert(result.msg);
+                    window.location.href=result.data;
+                }
+            },
+            error:()=>{
+                alert("ajax failed");
+            }
+        });
+
+        function createTable (jsonObj) {
+            for (var key in jsonObj.data) {
+                var grades = jsonObj.data[key];
+                if (key != "0") {
+                    var tabletitle = document.createElement("h3");
+                    tabletitle.innerHTML = key;
+                    tabletitle.setAttribute("class","term");
+                    document.getElementById("div2").appendChild(tabletitle);
+
+                    var tableNode = document.createElement("table");
+                    tableNode.setAttribute("id",key);
+                    tableNode.setAttribute("class","weui-table weui-table-2n");
+
+                    var trNode1=tableNode.insertRow();
+                    trNode1.setAttribute("id","tableHead")
+                    var tdNode1_1 =  trNode1.insertCell();
+                    var tdNode1_2 =  trNode1.insertCell();
+                    var tdNode1_3 =  trNode1.insertCell();
+                    var tdNode1_4 =  trNode1.insertCell();
+                    tdNode1_1.innerHTML = "学分";
+                    tdNode1_1.setAttribute("class","cols12")
+                    tdNode1_2.innerHTML = "绩点";
+                    tdNode1_2.setAttribute("class","cols12")
+                    tdNode1_3.innerHTML = "课程名";
+                    tdNode1_3.setAttribute("class","cols3")
+                    tdNode1_4.innerHTML = "得分";
+                    tdNode1_4.setAttribute("class","cols4")
+
+                    for (var x=0; x<grades.length; x++){
+                        var trNode2=tableNode.insertRow();
+                        trNode2.insertCell().innerHTML=grades[x].credit;
+                        trNode2.insertCell().innerHTML=grades[x].gradePoint;
+                        trNode2.insertCell().innerHTML=grades[x].name;
+
+                        var tdNode = trNode2.insertCell();
+                        if (grades[x].score<60){
+                            tdNode.setAttribute("class","failScore")
+                        }
+                        tdNode.innerHTML=grades[x].score;
+                    }
+                    document.getElementById("div2").appendChild(tableNode);//添加到位置div2
+                } else{
+                    var txt = grades[0].score;
+                    var str1 = txt.substring(0,txt.indexOf("平"));
+                    var str2 = txt.substring(txt.indexOf("平"),txt.length);
+                    document.getElementById("div1").appendChild(document.createTextNode(str1));
+                    document.getElementById("div1").appendChild(document.createElement("br"));
+                    document.getElementById("div1").appendChild(document.createTextNode(str2));
+                }
+            }
+        }
+
+
+        var jsonObj = {"msg": "ok",
+            "data":{
+                "2020-2021-1": [
+                    {
+                        "credit": "3.5",
+                        "gradePoint": "4",
+                        "name": "数据分析技术",
+                        "score": "53"
+                    },
+                    {
+                        "credit": "4",
+                        "gradePoint": "3.3",
+                        "name": "计算机组成原理与湖南科技大学B",
+                        "score": "84"
+                    }],
+                "2020-2021-2": [
+                    {
+                        "credit": "3.5",
+                        "gradePoint": "4",
+                        "name": "数据",
+                        "score": "93"
+                    },
+                    {
+                        "credit": "4",
+                        "gradePoint": "3.3",
+                        "name": "计算机",
+                        "score": "54"
+                    },
+                    {
+                        "credit": "4",
+                        "gradePoint": "3.3",
+                        "name": "计算机",
+                        "score": "84"
+                    }],
+                "2020-2021-3": [
+                    {
+                        "credit": "2",
+                        "gradePoint": "2",
+                        "name": "数据",
+                        "score": "93"
+                    },
+                    {
+                        "credit": "2",
+                        "gradePoint": "2",
+                        "name": "计算机网络B计算机网络B计算机网络B计算机网络B计算机网",
+                        "score": "84"
+                    },
+                    {
+                        "credit": "2",
+                        "gradePoint": "2",
+                        "name": "计算机",
+                        "score": "64"
+                    }],
+                "0": [
+                    {
+                        "score": "所修门数:54 所修总学分:134.5 平均学分绩点:3.48 平均成绩:85.52"
+                    }
+                ]
+            }
+        };
+    </script>
+</body>
+</html>

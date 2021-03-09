@@ -8,6 +8,7 @@ public class User {
     private String openId;
     private Date expire;
     private String info;
+    private int currentWeek;
 
     public User() {
 
@@ -19,12 +20,13 @@ public class User {
         this.openId = openId;
     }
 
-    public User(String account, String password, String openId, Date expire, String info) {
+    public User(String account, String password, String openId, Date expire, String info, int currentWeek) {
         this.account = account;
         this.password = password;
         this.openId = openId;
         this.expire = expire;
         this.info = info;
+        this.currentWeek = currentWeek;
     }
 
     public String getAccount() {
@@ -67,6 +69,14 @@ public class User {
         this.info = info;
     }
 
+    public int getCurrentWeek() {
+        return currentWeek;
+    }
+
+    public void setCurrentWeek(int currentWeek) {
+        this.currentWeek = currentWeek;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -75,6 +85,7 @@ public class User {
                 ", openId='" + openId + '\'' +
                 ", expire=" + expire +
                 ", info='" + info + '\'' +
+                ", currentWeek=" + currentWeek +
                 '}';
     }
 }

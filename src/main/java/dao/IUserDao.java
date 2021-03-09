@@ -15,16 +15,13 @@ public interface IUserDao {
     @Select("select * from user where open_id = #{openId}")
     User getUserByOpenId(@Param("openId") String openId);
 
-    @Insert("insert into user values (#{account}, #{password}, #{openId}, #{expire}, #{info})")
+    @Insert("insert into user values (#{account}, #{password}, #{openId}, #{expire}, #{info}, #{currentWeek})")
     int insertUser(User user);
 
     @Update("update user set account=#{account}, password=#{password} where open_id=#{openId}")
     int updateAccount(@Param("account") String account, @Param("password") String password, @Param("openId") String openId);
 
-    @Update("update user set expire=#{expire} where open_id=#{openId}")
-    int updateExpire(@Param("expire") Date expire, @Param("openId") String openId);
+    @Update("update user set expire=#{expire}, info=#{info}, currentWeek=#{currentWeek}  where open_id=#{openId}")
+    int updateCourseInfo(@Param("expire") Date expire, @Param("info") String info, @Param("currentWeek") int currentWeek, @Param("openId") String openId);
 
-
-    @Update("update user set info=#{info} where open_id=#{openId}")
-    int updateInfo(@Param("info") String info, @Param("openId") String openId);
 }

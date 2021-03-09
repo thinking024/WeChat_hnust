@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>course</title>
+</head>
+<body>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+<script>
+    $.ajax({
+        url: "http://yiyuanzhu.nat300.top/query/course",  // 发送的路径
+        type: "get",  // 发送方式
+        dataType: 'JSON',  // 返回的json数据
+        //data:{'openId': params, 'account': account, 'password': password},  // 发送的数据
+        success: (result) => {  // 成功获取到后端返回结果的回调函数
+            console.log(result);
+            if (result.statusCode === 100) {
+                alert('get courses successfully');
+            } else if (result.statusCode === 402){
+                window.location.href=result.data;
+                alert(result.msg);
+            }
+        },
+        error:()=>{
+            alert("ajax failed");
+        }
+    });
+</script>
+</body>
+</html>

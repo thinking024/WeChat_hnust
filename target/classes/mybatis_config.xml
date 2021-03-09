@@ -7,7 +7,7 @@
     <!--引入外部配置文件-->
     <properties resource="db.properties">
         <!--也可直接在这里写property，不用从配置文件导入，会优先使用外部配置文件-->
-        <!--<property name="driver" value="com.mysql.cj.jdbc.Driver" />-->
+        <property name="driver" value="com.mysql.cj.jdbc.Driver" />
     </properties>
     
     <settings>

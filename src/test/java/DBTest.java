@@ -15,16 +15,11 @@ import java.util.Date;
 public class DBTest {
     @Test
     public void test() {
-        String openId = "oQY_X6QicgzDEhj_dTMd3NR4ylAg";
-        String account = "1805050213";
-        String password = "hn095573";
         SqlSession sqlSession = MybatisUtils.getSqlSession();
-        IUserDao mapper = sqlSession.getMapper(IUserDao.class);
-        User user = mapper.getUserByOpenId(openId);
-        ICourseDao mapper1 = sqlSession.getMapper(ICourseDao.class);
-        int result = mapper1.deleteCourse("oQY_X6QicgzDEhj_dTMd3NR4ylAg");
-        System.out.println(result);
+        //IUserDao userMapper = sqlSession.getMapper(IUserDao.class);
+        //User user = userMapper.getUserByOpenId("oQY_X6QicgzDEhj_dTMd3NR4ylAg");
         sqlSession.close();
+        //System.out.println(user);
     }
 
     @Test

@@ -41,7 +41,7 @@ public class MessageUtil {
 
         //遍历所有子节点
         for (Element e : elementList) {
-            //System.out.println(e.getName() + "|" + e.getText());
+            System.out.println(e.getName() + "|" + e.getText());
             map.put(e.getName(), e.getText());
         }
 
