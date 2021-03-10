@@ -25,6 +25,8 @@ public class MessageUtil {
     public static final String REQ_MESSAGE_TYPE_TEXT = "text";  //请求消息类型：文本（用户向公众号）
     public static final String REQ_MESSAGE_TYPE_EVENT = "event";  //请求消息类型：事件推送
     public static final String EVENT_TYPE_CLICK = "CLICK";  //事件类型：CLICK(自定义菜单点击事件)
+    public static final String EVENT_TYPE_SUBSCRIBE = "subscribe"; // 事件类型：关注
+    public static final String EVENT_TYPE_UNSUBSCRIBE = "unsubscribe"; // 事件类型：关注
 
     //解析微信发来的请求（XML）
     public static Map<String,String> parseXML(HttpServletRequest hsRequest) throws Exception{
@@ -41,7 +43,7 @@ public class MessageUtil {
 
         //遍历所有子节点
         for (Element e : elementList) {
-            System.out.println(e.getName() + "|" + e.getText());
+//            System.out.println(e.getName() + "|" + e.getText());
             map.put(e.getName(), e.getText());
         }
 

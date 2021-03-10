@@ -2,30 +2,436 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>course</title>
-</head>
-<body>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>所有课表</title>
 
-<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
-<script>
-    $.ajax({
-        url: "http://yiyuanzhu.nat300.top/query/course",  // 发送的路径
-        type: "get",  // 发送方式
-        dataType: 'JSON',  // 返回的json数据
-        //data:{'openId': params, 'account': account, 'password': password},  // 发送的数据
-        success: (result) => {  // 成功获取到后端返回结果的回调函数
-            console.log(result);
-            if (result.statusCode === 100) {
-                alert('get courses successfully');
-            } else if (result.statusCode === 402){
-                window.location.href=result.data;
-                alert(result.msg);
-            }
-        },
-        error:()=>{
-            alert("ajax failed");
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/weui/2.3.0/style/weui.min.css">
+
+    <style type="text/css">
+        body{
+            margin-top: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
         }
+        .head {
+            color: transparent;
+            background-color: #22ad09;
+            text-shadow: rgba(255,255,255,0.5) 0 5px 6px, rgba(255,255,255,0.2) 1px 3px 3px;
+            -webkit-background-clip: text;
+        }
+        .div1 {
+            margin: 20px auto;
+            overflow: hidden;
+            text-align: center;
+        }
+        .div1_1 {
+            margin-top: 20px;
+            width: 20%;
+            height: 40px;
+            float: left;
+        }
+        .div1_2 {
+            margin-top: 10px;
+            width: 60%;
+            height: 60px;
+            float: left;
+        }
+
+        .course_table{
+            width: 100%;
+            border-spacing: 0;
+            margin-top: 10px;
+        }
+        .course_table th{
+            height: 40px;
+            background: #f3f8f8;
+            color: #6d8498;
+            font-weight: 400;
+            font-size: 16px;}
+        .course_table td{
+            text-align: center;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+        .course_table tr td:first-child {
+            background: #f3f8f8;
+            color: #698196;
+            border-bottom: none;
+            height: 150px;/*表格高度*/
+            font-size:16px;
+        }
+        .course_content{
+            font-size:14px;/*表格字体*/
+            -webkit-text-size-adjust: auto;
+            background: #adbeff;
+            color: #ffffff;
+            border-radius: 24px;
+            border:5px solid;
+        }
+        .div3 {
+            margin-top: 20px;
+            margin-bottom: 30px;
+            font-size: 16px;
+            font-style: italic;
+        }
+        #weekNumber {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body ontouchstart>
+<h2 align="center" class="head">课程表</h2>
+
+<div class="div1">
+    <div class="div1_1">
+        <button class="weui-btn weui-btn_mini weui-btn_primary" type="submit" onclick="lastWeek()">上一周</button>
+    </div>
+    <div class="div1_2">
+        <div class="page">
+            <div class="page__bd page__bd_spacing">
+                <a href="javascript:" class="weui-btn weui-btn_default" id="weekNumber" >当前周次：</a>
+            </div>
+        </div>
+    </div>
+    <div class="div1_1">
+        <button class="weui-btn weui-btn_mini weui-btn_primary" type="submit" onclick="nextWeek()">下一周</button>
+    </div>
+</div>
+
+<div class="div2">
+    <table class="weui-table course_table" >
+        <thead>
+        <tr>
+            <th width="9%"></th>
+            <th width="13%" id="wk1">周一</th>
+            <th width="13%" id="wk2">周二</th>
+            <th width="13%" id="wk3">周三</th>
+            <th width="13%" id="wk4">周四</th>
+            <th width="13%" id="wk5">周五</th>
+            <th width="13%" id="wk6">周六</th>
+            <th width="13%" id="wk7">周日</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1-2节</td>
+            <td id="1_12"></td>
+            <td id="2_12"></td>
+            <td id="3_12"></td>
+            <td id="4_12"></td>
+            <td id="5_12"></td>
+            <td id="6_12"></td>
+            <td id="7_12"></td>
+        </tr>
+        <tr>
+            <td>3-4节</td>
+            <td id="1_34"></td>
+            <td id="2_34"></td>
+            <td id="3_34"></td>
+            <td id="4_34"></td>
+            <td id="5_34"></td>
+            <td id="6_34"></td>
+            <td id="7_34"></td>
+        </tr>
+        <tr>
+            <td>5-6节</td>
+            <td id="1_56"></td>
+            <td id="2_56"></td>
+            <td id="3_56"></td>
+            <td id="4_56"></td>
+            <td id="5_56"></td>
+            <td id="6_56"></td>
+            <td id="7_56"></td>
+        </tr>
+        <tr>
+            <td>7-8节</td>
+            <td id="1_78"></td>
+            <td id="2_78"></td>
+            <td id="3_78"></td>
+            <td id="4_78"></td>
+            <td id="5_78"></td>
+            <td id="6_78"></td>
+            <td id="7_78"></td>
+        </tr>
+        <tr>
+            <td>9-10节</td>
+            <td id="1_910"></td>
+            <td id="2_910"></td>
+            <td id="3_910"></td>
+            <td id="4_910"></td>
+            <td id="5_910"></td>
+            <td id="6_910"></td>
+            <td id="7_910"></td>
+        </tr>
+        </tbody>
+
+    </table>
+</div>
+
+<div class="div3" id="div3"></div>
+
+
+<!-- body 最后 -->
+<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="https://res.wx.qq.com/open/libs/weuijs/1.2.1/weui.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        getCourse(null);
     });
+
+    function getCourse(week) {
+        if (week == null||week == null||week == undefined) {
+            week = 0;
+        }
+        $.ajax({
+            url: "http://yiyuanzhu.nat300.top/query3/course?week=" + week,  // 发送的路径
+            type: "get",  // 发送方式
+            dataType: 'JSON',  // 返回的json数据
+            //data:{'openId': params, 'account': account, 'password': password},  // 发送的数据
+            success: (result) => {  // 成功获取到后端返回结果的回调函数
+                //console.log(result);
+                if (result.statusCode === 100) {
+                    deleteTable();
+                    createTable(result);
+                } else {
+                    alert(result.msg);
+                    if (result.statusCode === 402) {
+                        window.location.href=result.data;
+                    }
+                }
+            },
+            error:()=>{
+                alert("ajax failed");
+            }
+        });
+    }
+
+    $("#weekNumber").on('click', function () {
+        weui.picker([
+                {label: '第1周',value: 1},
+                {label: '第2周',value: 2},
+                {label: '第3周',value: 3},
+                {label: '第4周',value: 4},
+                {label: '第5周',value: 5},
+                {label: '第6周',value: 6},
+                {label: '第7周',value: 7},
+                {label: '第8周',value: 8},
+                {label: '第9周',value: 9},
+                {label: '第10周',value: 10},
+                {label: '第11周',value: 11},
+                {label: '第12周',value: 12},
+                {label: '第13周',value: 13},
+                {label: '第14周',value: 14},
+                {label: '第15周',value: 15},
+                {label: '第16周',value: 16},
+                {label: '第17周',value: 17},
+                {label: '第18周',value: 18},
+                {label: '第19周',value: 19},
+            ],
+            {
+                onChange: function (ret) {},
+                onConfirm: function (ret) {
+                    getCourse(ret.toString());
+                },
+                title: '请选择查询周次'
+            });
+    });
+
+    var weeks = 0;
+
+    function createTable(jsonObj) {
+        weeks = jsonObj.data[jsonObj.data.length-1].day;
+        document.getElementById("weekNumber").innerHTML = "当前周次：第" + weeks + "周";
+
+        createTableHead(jsonObj.data[jsonObj.data.length-1].classroom);
+
+        var remarks = jsonObj.data[jsonObj.data.length-2].name;
+        document.getElementById("div3").innerHTML = remarks.replace(/;/g,"<br>");
+
+        for (var key = 0; key < jsonObj.data.length-2; key++) {
+            var names = jsonObj.data[key].name;
+            var classrooms = jsonObj.data[key].classroom;
+
+            var days = jsonObj.data[key].day;
+            var orderBegins = jsonObj.data[key].orderBegin;
+            var orderEnds = jsonObj.data[key].orderEnd;
+            var times = days + "_" + orderBegins + orderEnds;
+
+            document.getElementById(times).setAttribute("class","course_content");
+            document.getElementById(times).innerHTML = names + "<br>" + classrooms;
+        }
+    }
+
+    function deleteTable() {
+        document.getElementById("weekNumber").innerHTML = "当前周次：无";
+
+        deleteTableHead();
+
+        document.getElementById("div3").innerHTML = "无";
+
+        for (var x = 1; x <= 7; x++) {
+            document.getElementById(x+"_12").removeAttribute("class");
+            document.getElementById(x+"_12").innerHTML = null;
+            document.getElementById(x+"_34").removeAttribute("class");
+            document.getElementById(x+"_34").innerHTML = null;
+            document.getElementById(x+"_56").removeAttribute("class");
+            document.getElementById(x+"_56").innerHTML = null;
+            document.getElementById(x+"_78").removeAttribute("class");
+            document.getElementById(x+"_78").innerHTML = null;
+            document.getElementById(x+"_910").removeAttribute("class");
+            document.getElementById(x+"_910").innerHTML = null;
+        }
+    }
+
+    function createTableHead(str){
+        var today = eval('new Date(' + str.replace(/\d+(?=-[^-]+$)/,
+            function (a) { return parseInt(a, 10) - 1; }).match(/\d+/g) + ')');
+
+        for (var i = 1 ;i <= 7; i++) {
+            var wkid = "wk" + i;
+            var result = document.getElementById(wkid).innerHTML.slice(0,2) + "<br>" +
+                (today.getMonth()+1) + "/" + today.getDate();
+            document.getElementById(wkid).innerHTML = result;
+            today = new Date((today/1000+86400)*1000);
+        }
+    }
+
+    function deleteTableHead(str){
+        for (var i = 1 ;i <= 7; i++) {
+            var wkid = "wk" + i;
+            var result = document.getElementById(wkid).innerHTML.slice(0,2);
+            document.getElementById(wkid).innerHTML = result;
+        }
+    }
+
+    function lastWeek() {
+        if (weeks == 0) {
+            alert("请选择当前周次！");
+        } else if(weeks == 1) {
+            alert("当前为第1周！");
+        } else {
+            getCourse(weeks-1);
+        }
+
+    }
+
+    function nextWeek() {
+        if (weeks == 0) {
+            alert("请选择当前周次！");
+        } else if(weeks == 19) {
+            alert("当前为第19周,下周放假了！");
+        } else {
+            getCourse(weeks+1);
+        }
+    }
+
+    var jsonObj = {
+        "msg": "ok",
+        "data": [
+            {
+                "classroom": "逸夫楼520",
+                "day": 1,
+                "name": "软件测试技术B",
+                "orderBegin": 1,
+                "orderEnd": 2,
+                "weekBegin": 0,
+                "weekEnd": 0
+            },
+            {
+                "classroom": "第五教学楼2-2",
+                "day": 3,
+                "name": "编译原理",
+                "orderBegin": 1,
+                "orderEnd": 2,
+                "weekBegin": 0,
+                "weekEnd": 0
+            },
+            {
+                "classroom": "逸夫楼520",
+                "day": 4,
+                "name": "嵌入式系统及应用实验A",
+                "orderBegin": 1,
+                "orderEnd": 2,
+                "weekBegin": 0,
+                "weekEnd": 0
+            },
+            {
+                "classroom": "第五教学楼1-3",
+                "day": 1,
+                "name": "软件测试技术B",
+                "orderBegin": 3,
+                "orderEnd": 4,
+                "weekBegin": 0,
+                "weekEnd": 0
+            },
+            {
+                "classroom": "第五教学楼401",
+                "day": 2,
+                "name": "人工智能",
+                "orderBegin": 3,
+                "orderEnd": 4,
+                "weekBegin": 0,
+                "weekEnd": 0
+            },
+            {
+                "classroom": "逸夫楼520",
+                "day": 4,
+                "name": "嵌入式系统及应用实验A",
+                "orderBegin": 3,
+                "orderEnd": 4,
+                "weekBegin": 0,
+                "weekEnd": 0
+            },
+            {
+                "classroom": "第五教学楼1-3",
+                "day": 5,
+                "name": "编译原理",
+                "orderBegin": 3,
+                "orderEnd": 4,
+                "weekBegin": 0,
+                "weekEnd": 0
+            },
+            {
+                "classroom": "第五教学楼309",
+                "day": 4,
+                "name": "人工智能",
+                "orderBegin": 5,
+                "orderEnd": 6,
+                "weekBegin": 0,
+                "weekEnd": 0
+            },
+            {
+                "classroom": "第五教学楼401",
+                "day": 1,
+                "name": "编译原理",
+                "orderBegin": 7,
+                "orderEnd": 8,
+                "weekBegin": 0,
+                "weekEnd": 0
+            },
+            {
+                "name": "课设是 7-8周，巴拉巴拉歪比歪比",
+                "day": 0,
+                "orderBegin": 0,
+                "orderEnd": 0,
+                "weekBegin": 0,
+                "weekEnd": 0
+            },
+            {
+                "classroom": "2020-12-28",/*起始日期周一*/
+                "day": 9,/*第几周*/
+                "orderBegin": 0,
+                "orderEnd": 0,
+                "weekBegin": 0,
+                "weekEnd": 0
+            }
+        ],
+        "statusCode": 100
+    }
 </script>
+
+
 </body>
 </html>

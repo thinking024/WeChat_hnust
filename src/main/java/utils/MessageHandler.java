@@ -54,7 +54,7 @@ public class MessageHandler {
                 }
 
                 String info = courses.get(courses.size() - 1).getName();
-                respContent += "\n" + info; // 带上备注
+                respContent += "\n" + info.replace(";", "\n"); // 带上备注
             }
         } else { // 从数据库提取当天信息
             int day = DateUtil.getDay(new Date());
@@ -67,7 +67,7 @@ public class MessageHandler {
                     respContent += String.format("第%d、%d节：\n课程：%s\n教室：%s\n\n", course.getOrderBegin(), course.getOrderEnd(), course.getName(), course.getClassroom());
                 }
             }
-            respContent += user.getInfo(); // 带上备注
+            respContent += user.getInfo().replace(";", "\n"); // 带上备注
         }
         sqlSession.close();
         return respContent;
@@ -85,13 +85,22 @@ public class MessageHandler {
             String fromUserName = map.get("FromUserName");
             String toUserName = map.get("ToUserName");
             String msgType = map.get("MsgType");
-            System.out.println("msgType=" + msgType);
+            String eventType = map.get("Event");
 
-            //判断消息类型
-            if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_TEXT)) {
-                respContent = "发送了文本消息";
-            } else if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_EVENT)) {
-                String eventType = map.get("Event");
+            System.out.println(eventType + "----" + msgType);
+            if (eventType.equals(MessageUtil.EVENT_TYPE_SUBSCRIBE)) { // 关注
+                respContent += String.format("欢迎关注，请点击下方链接\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
+
+            } else if (eventType.equals(MessageUtil.EVENT_TYPE_UNSUBSCRIBE)) { // 取消关注
+                SqlSession sqlSession = MybatisUtils.getSqlSession();
+                IUserDao userMapper = sqlSession.getMapper(IUserDao.class);
+                userMapper.deleteUser(fromUserName);
+                sqlSession.close();
+
+            } else if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_TEXT)) {
+                //respContent += "发送了文本消息";
+
+            } else if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_EVENT)) { // 触发菜单
                 String eventKey = map.get("EventKey");
 
                 if (eventType.equals(MessageUtil.EVENT_TYPE_CLICK)) {
@@ -99,20 +108,19 @@ public class MessageHandler {
                     IUserDao userMapper = sqlSession.getMapper(IUserDao.class);
                     User user = userMapper.getUserByOpenId(fromUserName);
                     sqlSession.close();
-                    System.out.println(user);
 
                     if (user == null) { // 未登录，带上openid登录
-                        respContent = String.format("用户信息不存在，请点击下方链接\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
+                        respContent += String.format("用户信息不存在，请点击下方链接\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
                     } else {
 
                         //判断事件key值，对应自定义菜单
-                        if (eventKey.equals("TIMETABLE_TODAY")) {
-                            System.out.println("=====================");
-                            respContent = sendTodayCourse(fromUserName);
-                        } else if (eventKey.equals("ACHIEVEMENT_MY")) {
+                        if (eventKey.equals("TIMETABLE_TODAY")) { // 今日课程
+                            respContent += sendTodayCourse(fromUserName);
+
+                        } else if (eventKey.equals("ACHIEVEMENT_MY")) { // 近期成绩
                             TreeMap<String, ArrayList<Grade>> gradeMap = Crawler.getGrade2(user.getAccount(), Encode.kaiserDecode(user.getPassword()));
                             if (gradeMap == null) { // 用户信息过期，带上openid登录
-                                respContent = String.format("用户信息失效，请重新登录\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
+                                respContent += String.format("用户信息失效，请重新登录\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
                             } else { // 拿到课程
                                 if (gradeMap.size() == 1) {
                                     respContent += "暂无任何学期成绩\n";
@@ -126,7 +134,7 @@ public class MessageHandler {
                                 }
                             }
 
-                        } else if (eventKey.equals("EXAMINATION_SHOW")) {
+                        } else if (eventKey.equals("EXAMINATION_SHOW")) { // 考试安排
                             ArrayList<Exam> exams = Crawler.getExam(user.getAccount(), Encode.kaiserDecode(user.getPassword()));
                             if (exams == null) { // 用户信息过期，带上openid登录
                                 respContent = String.format("用户信息失效，请重新登录\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);

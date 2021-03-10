@@ -74,8 +74,7 @@ public class WXController {
         //接收、处理、响应由微信服务器转发的用户发送给公众号的消息
         String result = "";
         try{
-            System.out.println("开始构造消息" + request);
-            //System.out.println(result == null);
+            //System.out.println("开始构造消息" + request);
             result = MessageHandler.processRequest(request);
             if(result == null || "".equals(result)) {
                 result = "未正确响应";

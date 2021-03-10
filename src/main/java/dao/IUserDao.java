@@ -1,9 +1,6 @@
 package dao;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import pojo.User;
 
 import java.sql.Date;
@@ -24,4 +21,6 @@ public interface IUserDao {
     @Update("update user set expire=#{expire}, info=#{info}, currentWeek=#{currentWeek}  where open_id=#{openId}")
     int updateCourseInfo(@Param("expire") Date expire, @Param("info") String info, @Param("currentWeek") int currentWeek, @Param("openId") String openId);
 
+    @Delete("delete from user where open_id=#{openId}")
+    int deleteUser(@Param("openId") String openId);
 }

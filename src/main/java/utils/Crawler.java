@@ -246,7 +246,7 @@ public class Crawler {
         Course course = new Course();
         course.setName(text);
         courses.add(course);
-        System.out.println("after" + text);
+        //System.out.println("after" + text);
         return courses;
     }
 
@@ -332,6 +332,8 @@ public class Crawler {
                     instance.add(Calendar.DATE, 1);
                     beginDate += sdf.format(instance.getTime());
                     //System.out.println("begindate" + beginDate);
+                } else {
+                    beginDate += time;
                 }
 
                 String order = orderDoc.getElementById("kbjcmsid").getElementsByAttribute("selected").first().attr("value");
@@ -385,16 +387,16 @@ public class Crawler {
         }
 
         String text = rows.last().text();
-        System.out.println("before" + text);
+        //System.out.println("before" + text);
         if (text == null) { // 无备注信息
             text = "";
         } else { // 有备注信息
-            text = text.replace(";", "\n");
+            //text = text.replace(";", "\n");
         }
         Course course = new Course();
         course.setName(text);
         courses.add(course);
-        System.out.println("after" + text);
+        //System.out.println("after" + text);
 
         return courses;
     }

@@ -95,9 +95,9 @@
                     success: (result) => {  // 成功获取到后端返回结果的回调函数
                         console.log(result);
                         if (result.statusCode === 100) {
-                            alert('login successfully');
+                            $.toast("登录成功");
                             if (type != null) { // 从其他页面过来的，再跳转回去
-                                alert(type);
+                                //alert(type);
                                 window.location.href = "http://yiyuanzhu.nat300.top/" + type + ".html";
                             }
                         } else {
@@ -105,7 +105,7 @@
                         }
                     },
                     error:()=>{
-                        alert("ajax failed");
+                        $.toast("登录失败","cancel");
                     }
                 });
             }
