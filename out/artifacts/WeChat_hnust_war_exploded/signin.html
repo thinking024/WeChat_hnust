@@ -5,74 +5,112 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
     <title>登录界面</title>
 
-    <!-- 引入 WeUI -->
-    <link rel="stylesheet" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@5.0.45/css/materialdesignicons.min.css">
+
     <!-- head 中 -->
     <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css">
     <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
 
-    <style type="text/css">
-        .div1{
-            margin-top: 200px;
-            margin-left: 10px;
-            margin-right: 10px;
-            overflow: hidden;
+    <style>
+        .head {
+            color: transparent;
+            background-color: #34c6b7;
+            text-shadow: rgba(255,255,255,0.5) 0 5px 6px, rgba(255,255,255,0.2) 1px 3px 3px;
+            -webkit-background-clip: text;
+            font-size: 22px;
+            font-weight: bold;
         }
-        .div2{
-            margin-top: 20px;
-            margin-left: 50px;
-            margin-right: 50px;
+        .lyear-login {
+            display: flex !important;
+            min-height: 70vh;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        .login-header {
+            margin-bottom: 1.5rem !important;
+        }
+        .login-center {
+            background: #fff;
+            min-width: 15rem;
+            padding: 32px 48px;
+            border-radius: 5px;
+            margin: 48px;
+        }
+        .login-center .has-feedback.feedback-left .form-control {
+            padding-left: 38px;
+            padding-right: 12px;
+        }
+        .login-center .has-feedback.feedback-left .form-control-feedback {
+            left: 0;
+            right: auto;
+            width: 38px;
+            height: 38px;
+            line-height: 38px;
+            z-index: 4;
+            color: #dcdcdc;
+        }
+        .login-center .has-feedback.feedback-left.row .form-control-feedback {
+            left: 15px;
         }
     </style>
 </head>
 
 <body ontouchstart>
-    <form class="weui-cells weui-cells_form" id="login_info" action="#!" method="post">
-        <div class="weui-cells weui-cells_from div1">
-            <div class="weui-cell">
-                <div class="weui-cell__hd">
-                    <label class="weui-label">学号</label>
-                </div>
-                <div class="weui-cell__bd">
-                    <input required class="weui-input" id="account" pattern="[0-9]*" placeholder="请输入您的学号" type="number" max="999999999999" min="0">
-                </div>
+<div class="row lyear-wrapper">
+    <div class="lyear-login">
+        <div class="login-center">
+            <div class="login-header text-center">
+                <span class="head">学习服务系统</span>
             </div>
-
-            <div class="weui-cell">
-                <div class="weui-cell__hd">
-                    <label class="weui-label">密码</label>
+            <form action="#!" method="post">
+                <div class="form-group has-feedback feedback-left">
+                    <input type="text" placeholder="请输入您的学号" class="form-control" id="account">
+                    <span class="mdi mdi-account form-control-feedback" aria-hidden="true"></span>
                 </div>
-                <div class="weui-cell__bd">
-                    <input required class="weui-input" id="password" placeholder="请输入您的密码" type="password">
+                <div class="form-group has-feedback feedback-left">
+                    <input type="password" placeholder="请输入您的密码" class="form-control" id="password" name="password">
+                    <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
                 </div>
-            </div>
-
+                <div class="form-group">
+                    <button class="btn btn-block btn-primary" type="button" onclick="login()">立即登录</button>
+                </div>
+            </form>
         </div>
-    </form>
-    <div class="div2">
-        <button class="weui-btn weui-btn_primary" onclick="login();">登录</button>
     </div>
+</div>
 
-    <!-- body 最后 -->
-    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
-    <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 
-    <script>
-        function getQueryVariable(variable){
-            let query = window.location.search.substring(1);
-            let vars = query.split("&");
-            for (let i=0;i<vars.length;i++) {
-                let pair = vars[i].split("=");
-                if(pair[0] == variable){return pair[1];}
-            }
-            return(false);
+<!-- body 最后 -->
+<!--<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>-->
+<script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
+
+<script>
+    function getQueryVariable(variable){
+        let query = window.location.search.substring(1);
+        let vars = query.split("&");
+        for (let i=0;i<vars.length;i++) {
+            let pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
         }
+        return(false);
+    }
 
-        function login() {
-            var account = document.getElementById("account").value;
-            var password = document.getElementById("password").value;
-            var type = null;
-            if (account != null && password != null ) {
+    function login() {
+
+        var account = document.getElementById("account").value;
+        var password = document.getElementById("password").value;
+        var isnum = /^\d+$/.test(account);
+        if(account == "") {
+            alert("学号不能为空");
+        } else if(account != "" && isnum == false) {
+            alert("输入错误，学号只能由数字组成");
+        } else{
+            if(password == "") {
+                alert("密码不能为空");
+            } else {
                 var dataJson = {'account': account, 'password': password};
                 var str = window.location.search;
                 if (str.indexOf("code") != -1) { // 包含code字符串，未登录时点击菜单网页跳转而来
@@ -84,8 +122,6 @@
                     dataJson.openId = params;
                 }
 
-                console.log(dataJson)
-
                 $.ajax({
                     url: "http://yiyuanzhu.nat300.top/login",  // 发送的路径
                     type: "post",  // 发送方式
@@ -96,8 +132,7 @@
                         console.log(result);
                         if (result.statusCode === 100) {
                             $.toast("登录成功");
-                            if (type != null) { // 从其他页面过来的，再跳转回去
-                                //alert(type);
+                            if (type != undefined && type != null) { // 从其他页面过来的，再跳转回去
                                 window.location.href = "http://yiyuanzhu.nat300.top/" + type + ".html";
                             }
                         } else {
@@ -110,7 +145,8 @@
                 });
             }
         }
-    </script>
+    }
+</script>
 </body>
 </html>
 

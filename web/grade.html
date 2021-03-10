@@ -38,7 +38,7 @@
             background-color: #f7f7f7;
         }
         .summary {/*总成绩*/
-            margin-top: 10px;
+            margin-top: 50px;
             font-size: 18px;
         }
         .term {
@@ -64,7 +64,6 @@
     </style>
 </head>
 <body ontouchstart>
-<h2 align="center" class="head">我的成绩</h2>
 
 <div id="div1" class="summary"></div>
 <div id="div2"></div>
@@ -74,15 +73,12 @@
 <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
 <script type="text/javascript">
     $.ajax({
-        url: "http://yiyuanzhu.nat300.top/query3/grade",  // 发送的路径
+        url: "http://yiyuanzhu.nat300.top/query/grade",  // 发送的路径
         type: "get",  // 发送方式
         dataType: 'JSON',  // 返回的json数据
-        //data:{'openId': params, 'account': account, 'password': password},  // 发送的数据
         success: (result) => {  // 成功获取到后端返回结果的回调函数
-            //console.log(result);
             if (result.statusCode === 100) {
                 createTable(result);
-                //alert('get courses successfully');
             } else {
                 alert(result.msg);
                 if (result.statusCode === 402) {
@@ -147,124 +143,6 @@
         }
     }
 
-
-    var jsonObj = {"msg": "ok",
-        "data":{
-            "2020-2021-1": [
-                {
-                    "credit": "3.5",
-                    "gradePoint": "4",
-                    "name": "数据分析技术",
-                    "score": "53"
-                },
-                {
-                    "credit": "4",
-                    "gradePoint": "3.3",
-                    "name": "计算机组成原理与湖南科技大学B",
-                    "score": "84"
-                }],
-            "2020-2021-2": [
-                {
-                    "credit": "3.5",
-                    "gradePoint": "4",
-                    "name": "数据",
-                    "score": "93"
-                },
-                {
-                    "credit": "4",
-                    "gradePoint": "3.3",
-                    "name": "计算机",
-                    "score": "54"
-                },
-                {
-                    "credit": "4",
-                    "gradePoint": "3.3",
-                    "name": "计算机",
-                    "score": "84"
-                }],
-            "2020-2021-3": [
-                {
-                    "credit": "2",
-                    "gradePoint": "2",
-                    "name": "数据",
-                    "score": "93"
-                },
-                {
-                    "credit": "2",
-                    "gradePoint": "2",
-                    "name": "计算机网络B计算机网络B计算机网络B计算机网络B计算机网",
-                    "score": "84"
-                },
-                {
-                    "credit": "2",
-                    "gradePoint": "2",
-                    "name": "计算机",
-                    "score": "64"
-                }],
-            "2020-2021-4": [
-                {
-                    "credit": "2",
-                    "gradePoint": "2",
-                    "name": "数据",
-                    "score": "93"
-                },
-                {
-                    "credit": "2",
-                    "gradePoint": "2",
-                    "name": "计算机网络B计算机网络B计算机网络B计算机网络B计算机网",
-                    "score": "84"
-                },
-                {
-                    "credit": "2",
-                    "gradePoint": "2",
-                    "name": "计算机",
-                    "score": "64"
-                }],
-            "2020-2021-5": [
-                {
-                    "credit": "2",
-                    "gradePoint": "2",
-                    "name": "数据",
-                    "score": "93"
-                },
-                {
-                    "credit": "2",
-                    "gradePoint": "2",
-                    "name": "计算机网络B计算机网络B计算机网络B计算机网络B计算机网",
-                    "score": "84"
-                },
-                {
-                    "credit": "2",
-                    "gradePoint": "2",
-                    "name": "计算机",
-                    "score": "64"
-                }],
-            "2020-2021-6": [
-                {
-                    "credit": "2",
-                    "gradePoint": "2",
-                    "name": "数据",
-                    "score": "93"
-                },
-                {
-                    "credit": "2",
-                    "gradePoint": "2",
-                    "name": "计算机网络B计算机网络B计算机网络B计算机网络B计算机网",
-                    "score": "84"
-                },
-                {
-                    "credit": "2",
-                    "gradePoint": "2",
-                    "name": "计算机",
-                    "score": "64"
-                }],
-            "0": [
-                {
-                    "score": "所修门数:54 所修总学分:134.5 平均学分绩点:3.48 平均成绩:85.52"
-                }
-            ]
-        }
-    };
 </script>
 </body>
 </html>

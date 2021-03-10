@@ -6,10 +6,7 @@ import dao.IUserDao;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.web.bind.annotation.*;
 import pojo.User;
-import utils.Encode;
-import utils.GlobalInfo;
-import utils.MybatisUtils;
-import utils.NetWorkHelper;
+import utils.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -28,11 +25,12 @@ public class LoginController {
             json.put("msg", "openId or code is required");
             return JSONObject.toJSONString(json);
         }
+
         try {
-            /*if (Crawler.check(account, password) == false) {
-                json.setStatusCode(401);
-                json.setMsg("account or password error");
-            } else*/ {
+            if (Crawler.check(account, password) == false) {
+                json.put("statusCode", 401);
+                json.put("msg", "account or password error");
+            } else {
                 SqlSession sqlSession = MybatisUtils.getSqlSession();
                 IUserDao mapper = sqlSession.getMapper(IUserDao.class);
 
@@ -43,8 +41,6 @@ public class LoginController {
                     JSONObject resultJson = JSON.parseObject(result);
                     openId = resultJson.getString("openid");
                 }
-
-                System.out.println("openId = " + openId);
 
                 User user = mapper.getUserByOpenId(openId);
                 int result;

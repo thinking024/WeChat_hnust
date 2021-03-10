@@ -38,27 +38,6 @@ public class WXController {
         }
     }
 
-    // auth2URL放置在菜单中，用户主动点击，进入回调页面，回调页面为登录页面，登录页面获取code，通过ajax请求下面的方法，获取openId
-    /*@GetMapping("/authorize")
-    public String authorize() throws Exception {
-        String redirectURL = "http://yiyuanzhu.nat300.top/index.jsp";
-        String auth2URL = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + GlobalInfo.appId + "&redirect_uri=" + URLEncoder.encode(redirectURL, "utf-8") +
-                          "&response_type=code&scope=snsapi_base&state=#wechat_redirect";
-        return auth2URL;
-    }*/
-
-    @GetMapping("/authorize")
-    public String authorize(@RequestParam String code) {
-        NetWorkHelper netHelper = new NetWorkHelper();
-        String Url = String.format("https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code", GlobalInfo.appId, GlobalInfo.appSecret, code);
-        String result = netHelper.getHttpsResponse(Url, "");
-        System.out.println("获取到的auth="+result);
-        //使用FastJson将Json字符串解析成Json对象
-        JSONObject json = JSON.parseObject(result);
-        String openId = json.getString("openid");
-        return openId;
-    }
-
     /**
      * 处理微信服务器发来的消息
      * @param request

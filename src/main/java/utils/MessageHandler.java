@@ -6,7 +6,6 @@ import org.apache.ibatis.session.SqlSession;
 import pojo.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -26,8 +25,6 @@ public class MessageHandler {
         Date utilDate = new Date();
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime()); // 当前时间
         java.sql.Date expire = user.getExpire(); // 过期时间
-
-        System.out.println(expire + "==" + sqlDate.after(expire));
 
         if (expire == null || sqlDate.after(expire)) { // 课程信息不存在或者已过期，则需重新爬取
 
@@ -69,6 +66,8 @@ public class MessageHandler {
             }
             respContent += user.getInfo().replace(";", "\n"); // 带上备注
         }
+
+        respContent += String.format("\n<a href=\"%s\">点击查看学期课表详情</a>", "http://yiyuanzhu.nat300.top/course.html");
         sqlSession.close();
         return respContent;
     }
@@ -98,7 +97,7 @@ public class MessageHandler {
                 sqlSession.close();
 
             } else if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_TEXT)) {
-                //respContent += "发送了文本消息";
+                respContent += "hello world";
 
             } else if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_EVENT)) { // 触发菜单
                 String eventKey = map.get("EventKey");
@@ -118,7 +117,7 @@ public class MessageHandler {
                             respContent += sendTodayCourse(fromUserName);
 
                         } else if (eventKey.equals("ACHIEVEMENT_MY")) { // 近期成绩
-                            TreeMap<String, ArrayList<Grade>> gradeMap = Crawler.getGrade2(user.getAccount(), Encode.kaiserDecode(user.getPassword()));
+                            TreeMap<String, ArrayList<Grade>> gradeMap = Crawler.getGrade(user.getAccount(), Encode.kaiserDecode(user.getPassword()));
                             if (gradeMap == null) { // 用户信息过期，带上openid登录
                                 respContent += String.format("用户信息失效，请重新登录\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
                             } else { // 拿到课程
