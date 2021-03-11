@@ -62,6 +62,7 @@ public class LoginController {
                 String encode = Encode.kaiserEncode(account + " " + password);
                 Cookie cookie = new Cookie("auth", URLEncoder.encode(encode, "ascii"));
                 cookie.setMaxAge(60 * 60 * 24 * 30);
+                cookie.setPath("/");
                 response.addCookie(cookie);
             }
         } catch (UnsupportedEncodingException encodingException) {

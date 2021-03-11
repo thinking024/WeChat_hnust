@@ -24,54 +24,6 @@ import java.util.Date;
 @CrossOrigin(origins = "*")
 @RestController
 public class ServiceController {
-    @PostMapping(value="/today", produces={"application/json;charset=UTF-8"})
-    public String getTodayCourse(HttpServletRequest request) {
-        JSONObject myJSON = new JSONObject();
-        boolean flag = false;
-        String auth = "";
-        // 有cookie
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("auth")) {
-                flag = true;
-                auth += cookie.getValue();
-                break;
-            }
-        }
-        // 没有cookie，通过微信auth2授权，未登录则将auth2URL链接作为data返回，前端进入
-        if (flag == false) {
-            myJSON.put("statusCode", 401);
-            myJSON.put("msg", "no auth cookie");
-            return JSON.toJSONString(myJSON);
-        }
-
-        try {
-            // 获取的cookie，先url解码，再凯撒解码
-            //System.out.println("auth=" + auth);
-            String decodeAuth = URLDecoder.decode(auth, "ascii");
-            String[] s = Encode.kaiserDecode(decodeAuth).split(" ");
-            String account = s[0];
-            String password = s[1];
-            ArrayList<Course> courses = Crawler.getDayCourse(account, password);
-            if (courses == null) {
-                myJSON.put("statusCode", 400);
-                myJSON.put("msg", "account or password error");
-            } else {
-                Course course = new Course();
-                course.setName("name");
-                courses.add(course);
-                myJSON.put("statusCode", 100);
-                myJSON.put("msg", "ok");
-                myJSON.put("data", courses);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            myJSON.put("statusCode", 500);
-            myJSON.put("msg", e.getMessage());
-        } finally {
-            return JSON.toJSONString(myJSON);
-        }
-    }
 
     @GetMapping(value="/query/{type}", produces={"application/json;charset=UTF-8"})
     public String getWeekCourse(@PathVariable String type, @RequestParam(required=false, defaultValue="0") int week, HttpServletRequest request, HttpServletResponse response) {
@@ -136,6 +88,7 @@ public class ServiceController {
                     myJSON.put("msg", "ok");
                     myJSON.put("data", results);
                     authCookie.setMaxAge(60 * 60 * 24 * 30);
+                    authCookie.setPath("/");
                     response.addCookie(authCookie);
                 }
 
@@ -166,6 +119,9 @@ public class ServiceController {
             SqlSession sqlSession = MybatisUtils.getSqlSession();
             IUserDao userMapper = sqlSession.getMapper(IUserDao.class);
             User user = userMapper.getUserByAccount(account);
+            if (user == null) {
+                return null;
+            }
             ICourseDao courseMapper = sqlSession.getMapper(ICourseDao.class);
             Date currentUtil = new Date();
             java.sql.Date currentSql = new java.sql.Date(currentUtil.getTime()); // 当前时间

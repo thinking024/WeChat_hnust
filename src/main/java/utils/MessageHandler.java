@@ -87,22 +87,21 @@ public class MessageHandler {
             String eventType = map.get("Event");
 
             System.out.println(eventType + "----" + msgType);
-            if (eventType.equals(MessageUtil.EVENT_TYPE_SUBSCRIBE)) { // 关注
-                respContent += String.format("欢迎关注，请点击下方链接\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
-
-            } else if (eventType.equals(MessageUtil.EVENT_TYPE_UNSUBSCRIBE)) { // 取消关注
+            if (MessageUtil.REQ_MESSAGE_TYPE_TEXT.equals(msgType)) {
+                respContent += "hello world";
+            } else if (MessageUtil.EVENT_TYPE_UNSUBSCRIBE.equals(eventType)) { // 取消关注
                 SqlSession sqlSession = MybatisUtils.getSqlSession();
                 IUserDao userMapper = sqlSession.getMapper(IUserDao.class);
                 userMapper.deleteUser(fromUserName);
                 sqlSession.close();
 
-            } else if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_TEXT)) {
-                respContent += "hello world";
+            } else if (MessageUtil.EVENT_TYPE_SUBSCRIBE.equals(eventType)) { // 关注
+                respContent += String.format("欢迎关注，请点击下方链接\n" + "<a href=\"%s?openId=%s\">登录</a>", GlobalInfo.loginUrl, fromUserName);
 
-            } else if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_EVENT)) { // 触发菜单
+            } else if (MessageUtil.REQ_MESSAGE_TYPE_EVENT.equals(msgType)) { // 触发菜单
                 String eventKey = map.get("EventKey");
 
-                if (eventType.equals(MessageUtil.EVENT_TYPE_CLICK)) {
+                if (MessageUtil.EVENT_TYPE_CLICK.equals(eventType)) {
                     SqlSession sqlSession = MybatisUtils.getSqlSession();
                     IUserDao userMapper = sqlSession.getMapper(IUserDao.class);
                     User user = userMapper.getUserByOpenId(fromUserName);
