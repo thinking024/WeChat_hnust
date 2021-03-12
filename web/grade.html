@@ -80,6 +80,7 @@
             if (result.statusCode === 100) {
                 createTable(result);
             } else {
+                alert(result.msg);
                 if (result.statusCode == 402 || result.statusCode == 401) {
                     window.location.href=result.data;
                 }

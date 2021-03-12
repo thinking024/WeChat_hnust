@@ -188,7 +188,6 @@
                     createTable(result);
                 } else {
                     alert(result.msg);
-                    //alert(result.statusCode == 401);
                     if (result.statusCode === 402 || result.statusCode === 401) {
                         window.location.href=result.data;
                     }
@@ -249,8 +248,12 @@
             var days = jsonObj.data[key].day;
             var orderBegins = jsonObj.data[key].orderBegin;
             var orderEnds = jsonObj.data[key].orderEnd;
+            console.log(orderBegins);
+            console.log(orderEnds);
             var times = days + "_" + orderBegins + orderEnds;
 
+            document.getElementById(times);
+            console.log(times);
             document.getElementById(times).setAttribute("class","course_content");
             document.getElementById(times).innerHTML = names + "<br>" + classrooms;
         }

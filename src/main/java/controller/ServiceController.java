@@ -118,6 +118,7 @@ public class ServiceController {
 
             SqlSession sqlSession = MybatisUtils.getSqlSession();
             IUserDao userMapper = sqlSession.getMapper(IUserDao.class);
+            System.out.println(account);
             User user = userMapper.getUserByAccount(account);
             if (user == null) {
                 return null;

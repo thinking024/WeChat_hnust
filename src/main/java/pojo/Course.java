@@ -4,8 +4,6 @@ public class Course {
     private String openId;
     private String name;
     private int day;
-    private int weekBegin;
-    private int weekEnd;
     private int orderBegin;
     private int orderEnd;
     private String classroom;
@@ -34,22 +32,6 @@ public class Course {
 
     public void setDay(int day) {
         this.day = day;
-    }
-
-    public int getWeekBegin() {
-        return weekBegin;
-    }
-
-    public void setWeekBegin(int weekBegin) {
-        this.weekBegin = weekBegin;
-    }
-
-    public int getWeekEnd() {
-        return weekEnd;
-    }
-
-    public void setWeekEnd(int weekEnd) {
-        this.weekEnd = weekEnd;
     }
 
     public int getOrderBegin() {
